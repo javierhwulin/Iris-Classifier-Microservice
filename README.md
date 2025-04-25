@@ -130,5 +130,5 @@ Javier Hengda \| [javier.hwulin.devtech@gmail.com](mailto:javier.hwulin.devtec
 * **uv** – dependency management at warp speed.
 * The open‑source community for inspiration.
 
-> *If you run into issues or have feature ideas, please [open an issue](https://github.com/your-org/iris-classifier/issues) or drop me a line.*
+> *If you run into issues or have feature ideas, please [open an issue](https://github.com/javierhwulin/Iris-Classifier-Microservice/issues) or drop me a line.*
 
