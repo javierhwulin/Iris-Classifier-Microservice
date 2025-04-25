@@ -1,0 +1,49 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+    test:
+        runs-on: ubuntu-latest
+        steps:
+            # 1. Check out source
+            - uses: actions/checkout@v4
+            
+            # 2. Install system Python
+            - name: Set up Python
+              uses: actions/setup-python@v5
+              with:
+                python-version: "3.12"
+                
+            # 3. Install uv (static binary)
+            - name: Install uv
+              run: curl -LsSf https://astral.sh/uv/install.sh | sh
+            
+            # 4. Make uv available on PATH
+            - name: Add uv to PATH
+              run: echo "$HOME/.cargo/bin" >> "$GITHUB_PATH"
+              
+            # 5. Cache uv’s package downloads
+            - name: Cache uv downloads
+              uses: actions/cache@v4
+              with:
+                path: ~/.cache/uv
+                key: ${{ runner.os }}-uv-${{ hashFiles('**/uv.lock') }}
+                restore-keys: |
+                    ${{ runner.os }}-uv-
+            
+            # 6. Create venv & install deps + project in editable mode
+            - name: Install dependencies
+              run: |
+                uv venv --python 3.12 .venv
+                source .venv/bin/activate
+                uv sync
+                uv pip install -e .
+            
+            # 7. Run test suite
+            - name: Run tests
+              run: |
+                source .venv/bin/activate
+                pytest --maxfail=1 --disable-warnings -q
