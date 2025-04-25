@@ -4,19 +4,19 @@ FROM python:3.12-slim AS builder
 # Install system dependencies for uv
 RUN apt-get update \
  && apt-get install -y --no-install-recommends curl ca-certificates \
- && rm -rf /var/lib/apt/lists/*
-
-# Install uv package manager (drops uv into ~/.local/bin)
-RUN curl -LsSf https://astral.sh/uv/install.sh | sh \
- && cp ~/.local/bin/uv /usr/local/bin/uv \
- && cp ~/.local/bin/uvx /usr/local/bin/uvx
+ && rm -rf /var/lib/apt/lists/* \
+ && curl -LsSf https://astral.sh/uv/install.sh | sh \
+ && cp ~/.local/bin/uv /usr/local/bin/uv
 
 # Create project venv and install Python dependencies
 WORKDIR /src
 COPY pyproject.toml uv.lock ./
-RUN uv venv --python 3.12 .venv
-ENV PATH="/src/.venv/bin:${PATH}"
-RUN uv sync
+
+ENV PIP_EXTRA_INDEX_URL=https://download.pytorch.org/whl/cpu
+
+RUN uv venv --python 3.12 .venv \
+    && . .venv/bin/activate \
+    && uv sync --no-dev
 
 # -- Stage 2: Runtime ---
 FROM python:3.12-slim AS runtime
@@ -24,10 +24,8 @@ FROM python:3.12-slim AS runtime
 # Install minimal system deps for healthcheck
 RUN apt-get update \
  && apt-get install -y --no-install-recommends curl ca-certificates \
- && rm -rf /var/lib/apt/lists/*
-
-# Create non-root user
-RUN groupadd -r app && useradd -r -g app app
+ && rm -rf /var/lib/apt/lists/* \
+ && groupadd -r app && useradd -r -g app app
 
 WORKDIR /app
 

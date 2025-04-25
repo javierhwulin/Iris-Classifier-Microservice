@@ -82,7 +82,6 @@ jobs:
           - name: Smoke-test container
             run: |
               docker run -d --name iris-ci -p 8000:80 iris-service:ci
-              # wait a moment for Uvicorn
               sleep 5
               curl -f http://localhost:8000/health
               curl -f -X POST http://localhost:8000/v1/predict \

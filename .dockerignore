@@ -13,3 +13,8 @@ dist/
 tests/
 README.md
 .env
+bin
+*.py[oc]
+build/
+dist/
+wheels/
