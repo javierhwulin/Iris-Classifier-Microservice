@@ -48,12 +48,13 @@ jobs:
             - name: Train model
               run: |
                 source .venv/bin/activate
+                mkdir -p models
                 python -m app.training.train
             - name: Upload model artifact
               uses: actions/upload-artifact@v4
               with:
                 name: iris-model
-                path: models/iris_net.pt
+                path: models/
             # 8. Run test suite
             - name: Run tests
               run: |
